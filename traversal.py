@@ -13,29 +13,37 @@ def inorder_traverse(root):
     """inorder traversal
     """
     stack = Stack([], debug=True)
-    p = root
-    while p or stack:
-        while p:
-            stack.append(p)
-            p = p.left
+    node = root
 
-        p = stack.pop()
-        yield p
-        p = p.right
+    while True:
+        # push
+        while node:
+            stack.append(node)
+            node = node.left
+
+        if len(stack) == 0: break
+
+        # pop
+        node = stack.pop()
+
+        yield node
+
+        # next
+        node = node.right
 
 #----------------------------------------------------------
 def preorder_traverse(root):
     """preorder traversal
     """
-    if not root: return
-    stack = Stack([root])
+    stack = Stack([root], debug=True)
     while stack:
-        p = stack.pop()
-        yield p
-        if p.right:
-            stack.append(p.right)
-        if p.left:
-            stack.append(p.left)
+        node = stack.pop()
+        yield node
+
+        if node.right:
+            stack.append(node.right)
+        if node.left:
+            stack.append(node.left)
 
 #----------------------------------------------------------
 #http://software-troubleshooter.blogspot.com/2008/10/non-recursive-algorithm-for-postorder.html
@@ -46,7 +54,7 @@ def postorder_traverse(root):
     algorithm:
         postorder (left, right, root) is the reverse of (root, right, left)
     """
-    stack = Stack([root])
+    stack = Stack([root], debug=True)
     while stack:
         p = stack.pop()
         yield p
@@ -61,7 +69,7 @@ def postorder_traverse_2(root):
     algorithm:
       improve postorder_traverse by using 2 stacks and make the output in the rite order.
     """
-    stack1, stack2 = Stack([]), Stack([])
+    stack1, stack2 = Stack([], debug=True), Stack([])
     stack1.append(root)
     while stack1:
         p = stack1.pop()
@@ -82,8 +90,7 @@ def postorder_traverse_3(root):
       push/pop node to stack according to current node's state
     """
     ns = [root, VISIT_LEFT] #(node, state)
-    #stack = Stack([], debug=True)
-    stack = Stack([])
+    stack = Stack([], debug=True)
     while ns or stack:
         while ns:
             stack.append(ns)
@@ -116,22 +123,31 @@ def postorder_traverse_4(root):
       improve postorder_traverse_3 based on the fact that if last visited
     node is current node's right child, then current node should be popped up
     """
-    p = root
     stack = Stack([], debug=True)
+    node = root
     last_visited = None
-    while p or stack:
-        while p:
-            stack.append(p)
-            p = p.left
 
-        p = stack[-1]
-        if not p.right or p.right == last_visited:
-            yield p
-            stack.pop()
-            last_visited = p
-            p = None
+    while True:
+        # push
+        while node:
+            stack.append(node)
+            node = node.left
+
+        if not stack: break
+
+        # top/pop
+        node = stack[-1]
+        if not node.right or node.right == last_visited:
+            node = stack.pop()
+            yield node
+            last_visited = node
+
+            # prepare next
+            node = None
+
         else:
-            p = p.right
+            # prepare next
+            node = node.right
 
 #----------------------------------------------------------
 def breadth_first_traverse(root):
@@ -143,8 +159,7 @@ def breadth_first_traverse(root):
     if not root:
         return
 
-    #q = Queue([root], debug=True)
-    q = Queue([root])
+    q = Queue([root], debug=True)
     while q:
         p = q.pop(0)
         yield p
