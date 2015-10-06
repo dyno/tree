@@ -46,6 +46,51 @@ def find_nodes_with_sum(root, _sum):
         else:
             return (p1.value, p2.value)
 
+def find_nodes_with_sum_2(root, _sum):
+    """find 2 nodes that their sum is _sum in a binary search tree.
+
+    algorithm:
+      basically 2 pointer for the left and right side of the list and move
+    it closer based on the sum of the 2 nodes.
+    """
+
+    def inorder_traverse(root, order="L"):
+        stack = []
+        node = root
+        while True:
+            while node:
+                stack.append(node)
+                if order == "L":
+                    node = node.left
+                else:
+                    node = node.right
+
+            if not stack:
+                return
+
+            node = stack.pop()
+            yield node
+
+            if order == "L":
+                node = node.right
+            else:
+                node = node.left
+
+    lo_iter = inorder_traverse(root, order="L")
+    hi_iter = inorder_traverse(root, order="R")
+    lo = lo_iter.next()
+    hi = hi_iter.next()
+    while lo.value < hi.value:
+        v = lo.value + hi.value
+
+        if v == _sum:
+            return lo.value, hi.value
+
+        if v < _sum:
+            lo = lo_iter.next()
+        else:
+            hi = hi_iter.next()
+
 #======================================================================
 if __name__ == "__main__":
     from test import test_root
@@ -63,7 +108,7 @@ if __name__ == "__main__":
         print_tree(root)
         for _sum in [-1, 1, 2, 3, 4, 4.5, 5, 6, 7, 8, 10, 11, 12, 13, 14, 20]:
             r = f(root, _sum)
-            if r != None:
+            if r is not None:
                 x, y = r
                 print "%d+%d=%d" % (x, y, _sum)
             else:
